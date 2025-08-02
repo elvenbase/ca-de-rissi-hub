@@ -1,73 +1,154 @@
-# Welcome to your Lovable project
+# Ca De Rissi SG Esport - Sistema di Gestione Squadra
 
-## Project info
+Sistema completo per la gestione di una squadra sportiva, con funzionalità per gestione giocatori, allenamenti, prove, competizioni e molto altro.
 
-**URL**: https://lovable.dev/projects/bd4a61d3-8c6f-440b-9b90-68522762e848
+## 🚀 Caratteristiche
 
-## How can I edit this code?
+### 🏠 Dashboard
+- Panoramica generale del club
+- Statistiche giocatori attivi
+- Allenamenti programmati
+- Attività recenti
 
-There are several ways of editing your application.
+### 👥 Gestione Squad
+- Gestione completa dei giocatori
+- Stati: attivo, inattivo, infortunato, sospeso
+- Numeri di maglia e posizioni
+- Statistiche individuali
 
-**Use Lovable**
+### 🏃 Sistema Prove (Trials)
+- Gestione trialists con valutazioni
+- Kanban board per il follow-up
+- Punteggi: tecnico, fisico, tattico, atteggiamento
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/bd4a61d3-8c6f-440b-9b90-68522762e848) and start prompting.
+### 🏋️ Allenamenti
+- Programmazione sessioni
+- Gestione presenze
+- Condivisione pubblica con QR code
+- Sistema di registrazione online
 
-Changes made via Lovable will be committed automatically to this repo.
+### 🏆 Competizioni
+- Gestione campionati e tornei
+- Calendario partite
+- Risultati e statistiche
 
-**Use your preferred IDE**
+### ⚽ Formazioni
+- Builder formazioni tattiche
+- Gestione lineup
+- Visualizzazione schieramenti
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🛠️ Tecnologie Utilizzate
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **Frontend**: React 18 + TypeScript + Vite
+- **UI Framework**: shadcn/ui + Tailwind CSS
+- **Backend**: Supabase (PostgreSQL + Auth)
+- **State Management**: React Query
+- **Routing**: React Router Dom
+- **Form Management**: React Hook Form + Zod
 
-Follow these steps:
+## 📋 Prerequisiti
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- Node.js 18+ e npm/yarn
+- Account Supabase (per database e autenticazione)
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🚀 Installazione e Setup
 
-# Step 3: Install the necessary dependencies.
-npm i
+### 1. Clona il repository
+```bash
+git clone <YOUR_REPO_URL>
+cd ca-de-rissi-sg-esport
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### 2. Installa le dipendenze
+```bash
+npm install
+```
+
+### 3. Configura Supabase
+
+#### Opzione A: Usa il database esistente
+Il progetto è già configurato con un'istanza Supabase funzionante. Puoi usarla per testare l'applicazione.
+
+#### Opzione B: Crea la tua istanza Supabase
+1. Crea un nuovo progetto su [supabase.com](https://supabase.com)
+2. Copia le credenziali del tuo progetto
+3. Modifica `src/integrations/supabase/client.ts` con le tue credenziali:
+```typescript
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_PUBLISHABLE_KEY = "YOUR_SUPABASE_ANON_KEY";
+```
+4. Esegui le migrazioni del database dalla cartella `supabase/migrations/`
+
+### 4. Avvia l'applicazione
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+L'applicazione sarà disponibile su `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📁 Struttura del Progetto
 
-**Use GitHub Codespaces**
+```
+src/
+├── components/          # Componenti riutilizzabili
+├── pages/              # Pagine dell'applicazione
+├── contexts/           # Context providers (Auth, etc.)
+├── hooks/              # Custom hooks
+├── integrations/       # Configurazioni esterne (Supabase)
+├── lib/               # Utilities e helpers
+└── data/              # Dati statici
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+supabase/
+├── migrations/        # Migrazioni database
+└── functions/         # Edge functions
+```
 
-## What technologies are used for this project?
+## 🔐 Sistema di Autenticazione
 
-This project is built with:
+L'applicazione utilizza un sistema di ruoli:
+- **Superadmin**: Accesso completo
+- **Admin**: Gestione squadra e competizioni  
+- **Coach**: Gestione allenamenti e valutazioni
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 📱 Funzionalità Avanzate
 
-## How can I deploy this project?
+### Condivisione Pubblica
+- Link pubblici per registrazione agli allenamenti
+- QR code per accesso rapido
+- Interfaccia mobile-friendly
 
-Simply open [Lovable](https://lovable.dev/projects/bd4a61d3-8c6f-440b-9b90-68522762e848) and click on Share -> Publish.
+### Real-time Updates
+- Aggiornamenti in tempo reale
+- Sincronizzazione automatica
+- Gestione offline
 
-## Can I connect a custom domain to my Lovable project?
+## 🚀 Deployment
 
-Yes, you can!
+### Vercel (Consigliato)
+1. Connetti il repository a Vercel
+2. Configura le variabili d'ambiente se necessario
+3. Deploy automatico
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Netlify
+1. Connetti il repository a Netlify
+2. Build command: `npm run build`
+3. Publish directory: `dist`
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Altri provider
+Il progetto è compatibile con qualsiasi hosting che supporti applicazioni React statiche.
+
+## 🤝 Contribuire
+
+1. Fork del progetto
+2. Crea un branch per la feature (`git checkout -b feature/AmazingFeature`)
+3. Commit delle modifiche (`git commit -m 'Add some AmazingFeature'`)
+4. Push del branch (`git push origin feature/AmazingFeature`)
+5. Apri una Pull Request
+
+## 📄 Licenza
+
+Questo progetto è distribuito sotto licenza MIT. Vedi `LICENSE` per maggiori informazioni.
+
+## 📞 Supporto
+
+Per supporto o domande, contatta il team di sviluppo.
