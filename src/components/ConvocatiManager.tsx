@@ -24,7 +24,7 @@ interface Player {
 interface Attendance {
   id: string
   player_id: string
-  status: 'present' | 'absent' | 'late' | 'excused'
+  status: 'pending' | 'present' | 'absent' | 'late' | 'excused'
 }
 
 interface Convocato {
