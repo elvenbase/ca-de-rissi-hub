@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { Users, UserCheck, UserX, Plus, X } from 'lucide-react'
+import { Users, UserCheck, UserX, Plus, X, Info } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '@/integrations/supabase/client'
 import { useAvatarColor } from '@/hooks/useAvatarColor'
@@ -18,6 +18,7 @@ interface Player {
   jersey_number?: number
   position?: string
   avatar_url?: string
+  status: 'active' | 'inactive' | 'injured' | 'suspended'
 }
 
 interface Convocato {
@@ -41,6 +42,9 @@ export const ConvocatiManager = ({ sessionId, allPlayers, isReadOnly = false }: 
   const [loading, setLoading] = useState(false)
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([])
   const { getAvatarBackground } = useAvatarColor()
+
+  // Filtra solo i giocatori attivi (stesso criterio usato nel resto dell'app)
+  const activePlayers = allPlayers.filter(player => player.status === 'active')
 
   // Carica i convocati esistenti
   useEffect(() => {
@@ -158,11 +162,23 @@ export const ConvocatiManager = ({ sessionId, allPlayers, isReadOnly = false }: 
 
   const confirmedCount = convocati.filter(c => c.confirmed).length
   const totalConvocati = convocati.length
+  const totalActivePlayers = activePlayers.length
 
   return (
     <div className="space-y-6">
       {/* Statistiche */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-blue-600" />
+              <div>
+                <p className="text-2xl font-bold text-blue-600">{totalActivePlayers}</p>
+                <p className="text-sm text-muted-foreground">Giocatori Attivi</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
@@ -207,12 +223,29 @@ export const ConvocatiManager = ({ sessionId, allPlayers, isReadOnly = false }: 
               Seleziona Convocati
             </CardTitle>
             <CardDescription>
-              Seleziona i giocatori da convocare per questa sessione
+              Seleziona i giocatori attivi da convocare per questa sessione
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Messaggio informativo sul filtro */}
+            {allPlayers.length > activePlayers.length && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center gap-2 text-blue-800">
+                  <Info className="h-4 w-4" />
+                  <p className="text-sm">
+                    Vengono mostrati solo i <strong>{activePlayers.length} giocatori attivi</strong>. 
+                    {allPlayers.length - activePlayers.length > 0 && (
+                      <span className="ml-1">
+                        {allPlayers.length - activePlayers.length} giocatori esclusi (inattivi, feriti o sospesi).
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </div>
+            )}
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-60 overflow-y-auto">
-              {allPlayers.map((player) => (
+              {activePlayers.map((player) => (
                 <div
                   key={player.id}
                   className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
