@@ -21,6 +21,12 @@ interface Player {
   status: 'active' | 'inactive' | 'injured' | 'suspended'
 }
 
+interface Attendance {
+  id: string
+  player_id: string
+  status: 'present' | 'absent' | 'late' | 'excused'
+}
+
 interface Convocato {
   id: string
   session_id: string
@@ -34,17 +40,21 @@ interface Convocato {
 interface ConvocatiManagerProps {
   sessionId: string
   allPlayers: Player[]
+  attendance?: Attendance[]
   isReadOnly?: boolean
 }
 
-export const ConvocatiManager = ({ sessionId, allPlayers, isReadOnly = false }: ConvocatiManagerProps) => {
+export const ConvocatiManager = ({ sessionId, allPlayers, attendance, isReadOnly = false }: ConvocatiManagerProps) => {
   const [convocati, setConvocati] = useState<Convocato[]>([])
   const [loading, setLoading] = useState(false)
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([])
   const { getAvatarBackground } = useAvatarColor()
 
-  // Filtra solo i giocatori attivi (stesso criterio usato nel resto dell'app)
-  const activePlayers = allPlayers.filter(player => player.status === 'active')
+  // Usa lo stesso criterio delle formazioni: solo giocatori presenti
+  const presentPlayers = allPlayers.filter(player => {
+    const playerAttendance = attendance?.find(a => a.player_id === player.id);
+    return playerAttendance?.status === 'present';
+  })
 
   // Carica i convocati esistenti
   useEffect(() => {
@@ -162,7 +172,7 @@ export const ConvocatiManager = ({ sessionId, allPlayers, isReadOnly = false }: 
 
   const confirmedCount = convocati.filter(c => c.confirmed).length
   const totalConvocati = convocati.length
-  const totalActivePlayers = activePlayers.length
+  const totalPresentPlayers = presentPlayers.length
 
   return (
     <div className="space-y-6">
@@ -173,8 +183,8 @@ export const ConvocatiManager = ({ sessionId, allPlayers, isReadOnly = false }: 
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5 text-blue-600" />
               <div>
-                <p className="text-2xl font-bold text-blue-600">{totalActivePlayers}</p>
-                <p className="text-sm text-muted-foreground">Giocatori Attivi</p>
+                <p className="text-2xl font-bold text-blue-600">{totalPresentPlayers}</p>
+                <p className="text-sm text-muted-foreground">Giocatori Presenti</p>
               </div>
             </div>
           </CardContent>
@@ -223,29 +233,44 @@ export const ConvocatiManager = ({ sessionId, allPlayers, isReadOnly = false }: 
               Seleziona Convocati
             </CardTitle>
             <CardDescription>
-              Seleziona i giocatori attivi da convocare per questa sessione
+              Seleziona i giocatori presenti da convocare per questa sessione
             </CardDescription>
           </CardHeader>
           <CardContent>
             {/* Messaggio informativo sul filtro */}
-            {allPlayers.length > activePlayers.length && (
+            {allPlayers.length > presentPlayers.length && (
               <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <div className="flex items-center gap-2 text-blue-800">
                   <Info className="h-4 w-4" />
                   <p className="text-sm">
-                    Vengono mostrati solo i <strong>{activePlayers.length} giocatori attivi</strong>. 
-                    {allPlayers.length - activePlayers.length > 0 && (
+                    Vengono mostrati solo i <strong>{presentPlayers.length} giocatori presenti</strong>. 
+                    {allPlayers.length - presentPlayers.length > 0 && (
                       <span className="ml-1">
-                        {allPlayers.length - activePlayers.length} giocatori esclusi (inattivi, feriti o sospesi).
+                        {allPlayers.length - presentPlayers.length} giocatori esclusi (assenti o non hanno confermato entro 4 ore dall'allenamento).
                       </span>
                     )}
                   </p>
                 </div>
               </div>
             )}
+
+            {presentPlayers.length === 0 && (
+              <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="flex items-center gap-2 text-amber-800">
+                  <Info className="h-4 w-4" />
+                  <p className="text-sm">
+                    <strong>Nessun giocatore presente.</strong> I giocatori diventano "presenti" quando:
+                  </p>
+                </div>
+                <ul className="mt-2 text-sm text-amber-700 list-disc list-inside space-y-1">
+                  <li>Confermano la presenza entro 4 ore dall'inizio dell'allenamento</li>
+                  <li>Vengono segnati come presenti dall'allenatore nella sezione Presenze</li>
+                </ul>
+              </div>
+            )}
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-60 overflow-y-auto">
-              {activePlayers.map((player) => (
+              {presentPlayers.map((player) => (
                 <div
                   key={player.id}
                   className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
