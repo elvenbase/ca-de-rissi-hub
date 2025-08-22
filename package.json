@@ -7,8 +7,16 @@
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "build:main": "BASE_PATH=/ vite build",
+    "build:develop": "BASE_PATH=/develop/ vite build",
+    "build:feature": "BASE_PATH=/feature/ vite build",
+    "build:staging": "BASE_PATH=/staging/ vite build",
+    "build:netlify": "BASE_PATH=/ vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "lint:fix": "eslint . --fix",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "test:build": "npm run lint && npm run type-check && npm run build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
